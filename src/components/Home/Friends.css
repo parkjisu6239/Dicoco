@@ -1,0 +1,8 @@
+#session {
+    border: solid 1px black;
+}
+
+.chat {
+    display: flex;
+    gap: 20px;
+}
