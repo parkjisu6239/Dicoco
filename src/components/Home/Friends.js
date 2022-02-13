@@ -1,29 +1,27 @@
 import axios from 'axios';
 import { OpenVidu } from 'openvidu-browser';
+import react from 'react';
 import React, { Component } from 'react';
 import './Friends.css'
 
 const OPENVIDU_SERVER_URL = 'https://' + window.location.hostname + ':4443';
 const OPENVIDU_SERVER_SECRET = 'MY_SECRET';
+const anonymous = require('./anonymous.json')
 
 
 class Friends extends Component {
     constructor(props) {
         super(props);
 
+        this.chatListRef = react.createRef(null)        
         this.state = {
             mySessionId: 'SessionA',
-            myUserName: 'Participant' + Math.floor(Math.random() * 100),
+            myUserName: '익명의 ' + anonymous[Math.floor(Math.random() * anonymous.length)],
+            pk: null,
             session: undefined,
             chatList: [],
             msg: '',
-            friends: [
-                {name: '1', isOn: false},
-                {name: '2', isOn: false},
-                {name: '3', isOn: false},
-                {name: '4', isOn: false},
-                {name: '5', isOn: false},
-            ]
+            participants: []
         };
 
         this.joinSession = this.joinSession.bind(this);
@@ -33,7 +31,11 @@ class Friends extends Component {
         this.onbeforeunload = this.onbeforeunload.bind(this);
         this.handleChangeChatContent = this.handleChangeChatContent.bind(this)
         this.submitChat = this.submitChat.bind(this)
-        this.enterExitChatRoom = this.enterExitChatRoom.bind(this)
+        this.sendEnterExitSignal = this.sendEnterExitSignal.bind(this)
+    }
+
+    componentDidUpdate() {
+        this.chatListRef.current.scrollTop = this.chatListRef.current.scrollHeight
     }
 
     componentDidMount() {
@@ -41,11 +43,13 @@ class Friends extends Component {
     }
 
     componentWillUnmount() {
+        this.sendEnterExitSignal("exit");
+        this.leaveSession();
         window.removeEventListener('beforeunload', this.onbeforeunload);
     }
 
     onbeforeunload(event) {
-        this.enterExitChatRoom("exit");
+        this.sendEnterExitSignal("exit");
         this.leaveSession();
     }
 
@@ -68,10 +72,21 @@ class Friends extends Component {
     }
 
     submitChat(e) {
-        if (e.keyCode !== 13) return
-       
+        if (e.keyCode !== 13 || this.state.msg === '') return
+        this.sendChatSignal('chat', this.state.msg)
+        
+    }
+
+    sendChatSignal(type, text) {
+        const content = {
+            type,
+            pk: this.state.pk,
+            name: this.state.myUserName,
+            text
+        }
+
         this.state.session.signal({
-            data: this.state.msg,  // Any string (optional)
+            data: JSON.stringify(content),  // Any string (optional)
             to: [],                     // Array of Connection objects (optional. Broadcast to everyone if empty)
             type: 'my-chat'             // The type of message (optional)
           })
@@ -86,9 +101,15 @@ class Friends extends Component {
           });
     }
 
-    enterExitChatRoom(msg) {
+    sendEnterExitSignal(type) {
+        const content = {
+            type,
+            pk: this.state.pk,
+            name: this.state.myUserName,
+        }
+
         this.state.session.signal({
-            data: msg,  // Any string (optional)
+            data: JSON.stringify(content),  // Any string (optional)
             to: [],                     // Array of Connection objects (optional. Broadcast to everyone if empty)
             type: 'enter-exit'             // The type of message (optional)
           })
@@ -117,14 +138,10 @@ class Friends extends Component {
                 // --- 3) Specify the actions when events take place in the session ---
 
                 mySession.on('signal:my-chat', (event) => {
-
                     this.setState({
                         chatList: [
                             ...this.state.chatList,
-                            {
-                                name: JSON.parse(event.from.data).clientData,
-                                text: event.data
-                            }
+                            JSON.parse(event.data)
                         ]
                     })
                     // console.log(event.from); // Connection object of the sender
@@ -132,33 +149,26 @@ class Friends extends Component {
                 });
 
                 mySession.on('signal:enter-exit', (event) => {
-                    const name = JSON.parse(event.from.data).clientData
-                    const text = event.data
+                    const {type, pk, name}  = JSON.parse(event.data)
                     
-                    if (text === "enter" && name !== this.state.myUserName) {
-                        this.enterExitChatRoom("reenter")
+                    if (type === "enter") {
+                        this.sendEnterExitSignal("reenter")
+                        this.setState({participants: []})
                     }
 
-                    if (text === "enter" || text === "reenter") {
-                        const friends = this.state.friends.map(friend => {
-                            let temp = friend
-                            if (friend.name === name) {
-                                temp.isOn = true
+                    if (type === "reenter") {
+                        this.setState({participants: [
+                            ...this.state.participants,
+                            { 
+                                pk,
+                                name
                             }
-                            return temp
-                        })
-                        this.setState({friends})
+                        ]})
                     }
 
-                    if (text === "exit") {
-                        const friends = this.state.friends.map(friend => {
-                            let temp = friend
-                            if (friend.name === name) {
-                                temp.isOn = false
-                            }
-                            return temp
-                        })
-                        this.setState({friends})
+                    if (type === "exit") {
+                        const participants = this.state.participants.filter(participant => participant.pk !== pk)
+                        this.setState({participants})
                     }
                     // console.log(event.data);
                     // console.log(event.from); // Connection object of the sender
@@ -184,7 +194,9 @@ class Friends extends Component {
                         )
                         .then(() => {
                             console.log("연결성공")
-                            this.enterExitChatRoom("enter")
+                            this.setState({pk: new Date().getTime()})
+                            this.sendEnterExitSignal("enter")
+                            this.sendChatSignal('enter', '님이 입장하셨습니다.')
                         })
                         .catch((error) => {
                             console.log('There was an error connecting to the session:', error.code, error.message);
@@ -195,7 +207,8 @@ class Friends extends Component {
     }
 
     leaveSession() {
-        this.enterExitChatRoom("exit")
+        this.sendEnterExitSignal("exit")
+        this.sendChatSignal('exit', '님이 나갔습니다.')
         // --- 7) Leave the session by calling 'disconnect' method over the Session object ---
 
         const mySession = this.state.session;
@@ -209,6 +222,7 @@ class Friends extends Component {
             session: undefined,
             mySessionId: 'SessionA',
             myUserName: 'Participant' + Math.floor(Math.random() * 100),
+            pk: null,
             chatList: [],
         });
     }
@@ -216,29 +230,16 @@ class Friends extends Component {
     render() {
         const mySessionId = this.state.mySessionId;
         const myUserName = this.state.myUserName;
+        const pk = this.state.pk
         const msg = this.state.msg
 
         return (
             <div className="container">
                 {this.state.session === undefined ? (
                     <div id="join">
-                        <div id="img-div">
-                            <img src="resources/images/openvidu_grey_bg_transp_cropped.png" alt="OpenVidu logo" />
-                        </div>
                         <div id="join-dialog" className="jumbotron vertical-center">
                             <h1> Join a Chat session </h1>
                             <form className="form-group" onSubmit={this.joinSession}>
-                                <p>
-                                    <label>Participant: </label>
-                                    <input
-                                        className="form-control"
-                                        type="text"
-                                        id="userName"
-                                        value={myUserName}
-                                        onChange={this.handleChangeUserName}
-                                        required
-                                    />
-                                </p>
                                 <p>
                                     <label> Session: </label>
                                     <input
@@ -247,6 +248,17 @@ class Friends extends Component {
                                         id="sessionId"
                                         value={mySessionId}
                                         onChange={this.handleChangeSessionId}
+                                        required
+                                    />
+                                </p>
+                                <p>
+                                    <label>Participant: </label>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        id="userName"
+                                        value={myUserName}
+                                        onChange={this.handleChangeUserName}
                                         required
                                     />
                                 </p>
@@ -259,36 +271,44 @@ class Friends extends Component {
                 ) : null}
 
                 {this.state.session !== undefined ? (
-                    <div className="chat">
-                        <div id="session">
-                            <div id="session-header">
-                                <h1 id="session-title">{mySessionId}</h1>
-                                <input
-                                    className="btn btn-large btn-danger"
-                                    type="button"
-                                    id="buttonLeaveSession"
-                                    onClick={this.leaveSession}
-                                    value="Leave session"
-                                />
-                                <p>내 이름{myUserName}</p>
-                                <input 
-                                    id="chat-input"
-                                    type="text"
-                                    value={msg}
-                                    onChange={this.handleChangeChatContent}
-                                    onKeyUp={this.submitChat}/>
+                    <div className='chat-container'>
+                        <div className='top'>
+                            <h2>{mySessionId}</h2>
+                            <input
+                                className="btn btn-large btn-danger"
+                                type="button"
+                                id="buttonLeaveSession"
+                                onClick={this.leaveSession}
+                                value="Leave session"
+                            />
+                        </div>
+                        <div className='chat-content'>
+                            <div className='participant'>
+                                <h3>참가자 ({this.state.participants.length} 명)</h3>
                                 <ul>
-                                    {this.state.chatList.map((chat, idx) => <li key={idx}>{chat.name} : {chat.text}</li>)}
+                                    {this.state.participants.map(participant => 
+                                        <li key={participant.pk}>{pk === participant.pk && "(나)" } {participant.name}</li>
+                                    )}
                                 </ul>
                             </div>
-                        </div>
-                        <div>
-                            <h3>칭긔</h3>
-                            <ul>
-                                {this.state.friends.map(friend => 
-                                    <li key={friend.name}>{friend.name} : {friend.isOn ? "들어옴" : "없음"}</li>
-                                )}
-                            </ul>
+                            <div className="chat">
+                                <ul ref={this.chatListRef}>
+                                    {this.state.chatList.map((chat, idx) => (
+                                        <li key={idx}>
+                                            {pk === chat.pk && "(나) " }{chat.name}{chat.type === 'chat' && " : "}{chat.text}
+                                        </li>
+                                    ))}
+                                </ul>
+                                <div>
+                                    <p>내 이름 : {myUserName}</p>
+                                    <input 
+                                        id="chat-input"
+                                        type="text"
+                                        value={msg}
+                                        onChange={this.handleChangeChatContent}
+                                        onKeyUp={this.submitChat}/>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 ) : null}
