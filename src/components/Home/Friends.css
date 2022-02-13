@@ -1,8 +1,47 @@
-#session {
+.container {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+
+}
+
+.container div {
     border: solid 1px black;
+}
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    /* height: 100vh; */
+}
+
+.top {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.chat-content {
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    height: 100%;
 }
 
 .chat {
     display: flex;
-    gap: 20px;
+    flex-direction: column;
+    justify-content: space-between;
 }
+
+.chat > ul {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    height: 0px;
+    /* overflow-y: scroll;
+    max-height: 600px; */
+}
+
+.chat > div {
+    max-height: 100px;
+}
+
