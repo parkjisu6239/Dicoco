@@ -1,0 +1,32 @@
+.participants {
+    padding: 10px;
+    background-color: rgb(243, 243, 243);
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 5px 0px;
+    color: #575757;
+}
+
+.participants h3 {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.participants h3 svg{
+    margin-left: 5px;
+}
+
+.participants ul{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.participants ul li{
+    margin: 0;
+    padding: 5px;
+    border-bottom: solid 1px #e0e0e0;
+}
+
+.participants ul li:last-child{
+    border-bottom: none;
+}

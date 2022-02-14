@@ -1,0 +1,20 @@
+.top {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: rgb(243, 243, 243);
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 2px;
+}
+
+.top h2 {
+    margin: 0;
+    padding: 0;
+    color: rgb(80, 80, 80);
+}
+
+.top .exit:hover {
+    cursor: pointer;
+    color: rgb(207, 58, 58);
+}

@@ -24,7 +24,6 @@ class ChatRoom extends Component {
         };
 
         this.joinSession = this.joinSession.bind(this);
-        this.leaveSession = this.leaveSession.bind(this);
         this.onbeforeunload = this.onbeforeunload.bind(this);
         this.changeChatContent = this.changeChatContent.bind(this)
         this.submitChat = this.submitChat.bind(this)
@@ -220,10 +219,10 @@ class ChatRoom extends Component {
         const msg = this.state.msg
 
         return (
-            <div className="container">
+            <>
                 {this.state.session !== undefined ? (
                     <div className='chat-container'>
-                        <RoomHeader sessionId={mySessionId} leaveSession={this.leaveSession}/>
+                        <RoomHeader sessionId={mySessionId}/>
                         <div className='chat-content'>
                             <Participants participants={participants} pk={pk}/>
                             <div className="chat">
@@ -233,7 +232,7 @@ class ChatRoom extends Component {
                         </div>
                     </div>
                 ) : null}
-            </div>
+            </>
         );
     }
 

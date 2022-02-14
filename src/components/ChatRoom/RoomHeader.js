@@ -1,14 +1,16 @@
-function RoomHeader({sessionId, leaveSession}) {
+import { Link } from 'react-router-dom' 
+import style from './RoomHeader.module.css'
+import { BiExit } from 'react-icons/bi'
+
+function RoomHeader({sessionId}) {
     return (
-        <header className='top'>
+        <header className={style.top}>
             <h2>{sessionId}</h2>
-            <input
-                className="btn btn-large btn-danger"
-                type="button"
-                id="buttonLeaveSession"
-                onClick={leaveSession}
-                value="Leave session"
-            />
+            <Link to="/">
+                <BiExit 
+                    className={style.exit}
+                    size="1.3rem"/>
+            </Link>
         </header>
     )
 }

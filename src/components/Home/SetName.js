@@ -1,4 +1,5 @@
 import { useState } from "react";
+import style from './SetName.module.css'
 
 function SetName({setName}) {
     const anonymous = require('./anonymous.json')
@@ -14,17 +15,24 @@ function SetName({setName}) {
     }
 
     return (
-        <div>
-            <p>
-                <label>Participant: </label>
-                <input
-                    type="text"
-                    value={input}
-                    onChange={ChangeInput}
-                    required
-                />
-                <button onClick={submitInput}>submit</button>
-            </p>
+        <div className={style.setName}>
+            <h1>Set your name</h1>
+            <form>
+                <label>name*</label>
+                <div className={style.join}>
+                    <input
+                        type="text"
+                        value={input}
+                        onChange={ChangeInput}
+                        required
+                    />
+                    <button 
+                        disabled={input.trim() ? false : true}
+                        onClick={submitInput}>
+                        →
+                    </button>
+                </div>
+            </form>
         </div>
     )
 }
