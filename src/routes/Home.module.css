@@ -1,0 +1,32 @@
+.home {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.home h1 {
+    font-size: 50px;
+}
+
+.menu {
+    display: flex;
+    gap: 20px;
+}
+
+.menu a {
+    color: black;
+    text-decoration-line : none;
+    padding: 10px 20px;
+    background-color: white;
+    border-radius: 30px;
+    font-size: large;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    transition: all 0.2s ease-in-out;
+}
+
+.menu a:hover {
+    color: white;
+    background-color: rgb(139, 189, 79);
+    box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 5px;
+}
