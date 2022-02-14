@@ -5,3 +5,8 @@
     width: 100vw;
     height: 100vh;
 }
+
+.App > div {
+    height: 100%;
+    width: 100%;
+}
