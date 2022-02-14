@@ -1,11 +1,24 @@
 .formControl {
-    padding: 10px;
-    display: grid;
-    grid-template-columns: 11fr 1fr;
-    gap: 10px;
-    width: 100%;
+    margin: 0px 15px 15px 15px;
+    display: flex;
+    padding: 15px 20px;
+    border-radius: 30px;
+    border: none;
+    background-color: white;
+    gap: 15px;
 }
 
 .formControl input {
-    height: 30px;
+    width: 100%;
+    color: #808080;
+    border-radius: 30px;
+    border: none;
+}
+
+.formControl input:focus{
+    outline: none;
+}
+
+.formControl .mic {
+    cursor: pointer;
 }

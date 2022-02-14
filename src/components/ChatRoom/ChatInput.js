@@ -1,4 +1,5 @@
 import styles from './ChatInput.module.css'
+import {IoMdMic} from 'react-icons/io'
 
 function ChatInput({msg, changeChatContent, submitChat}) {
     return (
@@ -8,8 +9,9 @@ function ChatInput({msg, changeChatContent, submitChat}) {
                 type="text"
                 value={msg}
                 onChange={changeChatContent}
-                onKeyUp={submitChat}/>
-            <button onClick={submitChat}>전송</button>
+                onKeyUp={submitChat}
+                placeholder="Type something to send"/>
+            <IoMdMic className={styles.mic} size="1.1rem"/>
         </div>
     )
 }
