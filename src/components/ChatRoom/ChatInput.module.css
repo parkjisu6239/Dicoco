@@ -1,0 +1,11 @@
+.formControl {
+    padding: 10px;
+    display: grid;
+    grid-template-columns: 11fr 1fr;
+    gap: 10px;
+    width: 100%;
+}
+
+.formControl input {
+    height: 30px;
+}
