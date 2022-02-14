@@ -9,8 +9,6 @@ import SessionId from './routes/SessionId';
 
 function App() {
   return (
-    <div className="App">
-      {/* <Friends/> */}
       <Routes>
         <Route path="/" element={<Home />}/>
         <Route path="/session" element={<Session />}/>
@@ -24,7 +22,6 @@ function App() {
           }
         />
       </Routes>
-    </div>
   );
 }
 
