@@ -1,8 +1,6 @@
 .container {
-    display: flex;
-    justify-content: center;
     height: 100%;
-
+    width: 100%;
 }
 
 .container div {
@@ -12,7 +10,7 @@
 .chat-container {
     display: flex;
     flex-direction: column;
-    /* height: 100vh; */
+    height: 100%;
 }
 
 .top {
