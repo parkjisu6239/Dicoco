@@ -8,7 +8,7 @@ function SessionId() {
     let sessionId = useParams().sessionId;
 
     return (
-        <div className="session-id">
+        <div className="sessionId">
             {name ? 
                 <ChatRoom name={name} sessionId={sessionId}/>
                 : <SetName setName={setName}/>
