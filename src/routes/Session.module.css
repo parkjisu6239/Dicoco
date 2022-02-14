@@ -1,0 +1,55 @@
+.session {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.session .form {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.session .form label{
+    font-size: smaller;
+    color: rgb(139, 189, 79);
+}
+
+.session .form input{
+    font-size: larger;
+    padding: 10px;
+    border-radius: 10px;
+    width: 250px;
+    border: solid 1px rgb(139, 189, 79);
+}
+
+.session .join {
+    display: flex;
+    gap: 5px;
+}
+
+.session a {
+    text-align: center;
+    text-decoration-line : none;
+    padding: 10px 15px;
+    border-radius: 10px;
+    color: white;
+    font-size: large;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    transition: all 0.2s ease-in-out;
+}
+
+.session a.enable {
+    background-color: rgb(139, 189, 79);
+}
+
+.session a.disable {
+    background-color: rgb(196, 194, 194);
+}
+
+.session a.enable:hover {
+    background-color: rgb(116, 163, 59);
+    box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 5px;
+}

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import style from './Session.module.css'
 
 function Session() {
     const [sessionId, setSessionId] = useState('SessionA')
@@ -9,21 +10,27 @@ function Session() {
     }
 
     return (
-        <div>
-            <label> Session: </label>
-            <input
-                className="form-control"
-                type="text"
-                id="sessionId"
-                value={sessionId}
-                onChange={ChangeSessionId}
-                required
-            />
-            <Link 
-                to={`/session/${sessionId.trim()}`} 
-                disable={sessionId.trim() ? 'false' : 'true'}>
-                submit
-            </Link>
+        <div className={style.session}>
+            <h1>Entner Chat Room</h1>
+            <div className={style.form}>
+                <label>Room name*</label>
+                <div className={style.join}>
+                    <input
+                        className="form-control"
+                        type="text"
+                        id="sessionId"
+                        value={sessionId}
+                        onChange={ChangeSessionId}
+                        required
+                    />
+                    <Link 
+                        className={sessionId.trim() ? style.enable : style.disable}
+                        to={`/session/${sessionId.trim()}`} 
+                        disabled={sessionId.trim() ? false : true}>
+                        →
+                    </Link>
+                </div>
+            </div>
         </div>
     )
 }
