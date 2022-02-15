@@ -4,6 +4,7 @@
     justify-content: center;
     align-items: center;
     gap: 20px;
+    color:rgb(70, 70, 70)
 }
 
 .session .form {
@@ -52,4 +53,12 @@
 .session a.enable:hover {
     background-color: rgb(116, 163, 59);
     box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 5px;
+}
+
+.warn {
+    height: 20px;
+    margin: 0;
+    font-size: small;
+    padding-left: 1.5px;
+    color: rgb(223, 64, 64);
 }

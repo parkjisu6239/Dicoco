@@ -4,8 +4,21 @@ import style from './Session.module.css'
 
 function Session() {
     const [sessionId, setSessionId] = useState('SessionA')
+    const [valid, setValid] = useState(true)
+    const [validMsg, setValidMsg] = useState('')
+    const reg = /^[a-zA-Z]+$/
 
     function ChangeSessionId(e) {
+        if (!reg.test(e.target.value)) {
+            setValid(false)
+            setValidMsg('No space, only english, up to 20 characters')
+        } else {
+            setValid(true)
+            setValidMsg('')
+        }
+
+        if (e.target.value.length > 20) return
+
         setSessionId(e.target.value);
     }
 
@@ -23,13 +36,15 @@ function Session() {
                         onChange={ChangeSessionId}
                         required
                     />
+                    {valid}
                     <Link 
-                        className={sessionId.trim() ? style.enable : style.disable}
+                        className={valid ? style.enable : style.disable}
                         to={`/session/${sessionId.trim()}`} 
-                        disabled={sessionId.trim() ? false : true}>
+                        disabled={valid ? false : true}>
                         →
                     </Link>
                 </div>
+                <p className={style.warn}>{validMsg}</p>
             </div>
         </div>
     )
