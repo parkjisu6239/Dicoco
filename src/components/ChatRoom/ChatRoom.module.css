@@ -1,0 +1,23 @@
+.chatContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+}
+
+.chatContent {
+    display: flex;
+    height: 100%;
+}
+
+.chat {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.chat > div {
+    max-height: 100px;
+}
+
