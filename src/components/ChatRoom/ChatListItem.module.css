@@ -1,0 +1,41 @@
+li{
+    margin: 5px 0px;
+}
+
+.enter{
+    text-align: center;
+    margin: 15px;
+}
+
+.chat{
+    display: flex;
+    flex-direction: column;
+}
+
+.chat .name{
+    font-size: small;
+    font-weight: bold;
+    padding: 3px 10px;
+}
+
+.chat .text{
+    padding: 12px 20px;
+}
+
+.chat.me > div{
+    align-self: flex-end;
+}
+
+.chat.you > div{
+    align-self: flex-start;
+}
+
+.chat.me .text{
+    background-color: rgb(139, 189, 79);
+    border-radius: 20px 20px 0px 20px;
+}
+
+.chat.you .text{
+    background-color: rgb(233, 233, 233);
+    border-radius: 20px 20px 20px 0px;
+}

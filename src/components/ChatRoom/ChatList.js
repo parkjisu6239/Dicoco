@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react"
+import ChatListItem from "./ChatListItem"
 import style from './ChatList.module.css'
 
 function ChatList({chatList, pk}) {
@@ -10,22 +11,9 @@ function ChatList({chatList, pk}) {
 
     return (
         <ul className={style.chatList} ref={chatListRef}>
-            {chatList.map((chat, idx) => {
-                if (chat.type !== 'chat') {
-                    return (
-                        <li key={idx} className={style.enter}>
-                            {chat.name}{chat.text}
-                        </li>
-                    )
-                } else {
-                    return (
-                        <li key={idx} className={`${style.chat} ${pk === chat.pk ? style.me : style.you}`}>
-                            {!(idx > 0 && chatList[idx-1].type === 'chat' && chatList[idx-1].pk === chat.pk) && <div className={style.name}>{chat.name}</div>}
-                            <div className={style.text}>{chat.text}</div>
-                        </li>
-                    )
-                }
-            })}
+            {chatList.map((chat, idx) =>
+                <ChatListItem prevChat={idx > 0 ? chatList[idx-1] : null} chat={chat} idx={idx} pk={pk}/>
+            )}
         </ul>
     )
 }
