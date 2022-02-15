@@ -6,6 +6,7 @@
     padding: 15px;
     background-color: rgb(243, 243, 243);
     box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 2px;
+    z-index: 1;
 }
 
 .top h2 {
@@ -14,11 +15,39 @@
     color: rgb(80, 80, 80);
 }
 
-.top a {
+.icons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.icons a {
     color: rgb(43, 43, 43);
 }
 
-.top a:hover {
+.icons a:hover {
     cursor: pointer;
     color: rgb(207, 58, 58);
 }
+
+.participants {
+    cursor: pointer;
+}
+
+.participants.toggleOff {
+    color: rgb(43, 43, 43);
+}
+
+.participants.toggleOn {
+    color: rgb(139, 189, 79);
+}
+
+.participants.toggleOff:hover {
+    color: rgb(139, 189, 79);
+}
+
+.participants.toggleOn:hover {
+    color: rgb(43, 43, 43);
+}
+

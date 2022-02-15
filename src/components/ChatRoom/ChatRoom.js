@@ -5,7 +5,7 @@ import RoomHeader from './RoomHeader';
 import Participants from './Participants';
 import ChatList from './ChatList';
 import ChatInput from './ChatInput';
-import './ChatRoom.css'
+import style from './ChatRoom.module.css'
 
 const OPENVIDU_SERVER_URL = 'https://' + window.location.hostname + ':4443';
 const OPENVIDU_SERVER_SECRET = 'MY_SECRET';
@@ -20,7 +20,8 @@ class ChatRoom extends Component {
             session: undefined,
             chatList: [],
             msg: '',
-            participants: []
+            participants: [],
+            participantsToggle: true,
         };
 
         this.joinSession = this.joinSession.bind(this);
@@ -28,6 +29,7 @@ class ChatRoom extends Component {
         this.changeChatContent = this.changeChatContent.bind(this)
         this.submitChat = this.submitChat.bind(this)
         this.sendEnterExitSignal = this.sendEnterExitSignal.bind(this)
+        this.toggleParticipants = this.toggleParticipants.bind(this)
     }
 
     
@@ -57,6 +59,10 @@ class ChatRoom extends Component {
         if ((e.type === 'keyup' && e.keyCode !== 13) || this.state.msg === '') return
         this.sendChatSignal('chat', this.state.msg)
         
+    }
+
+    toggleParticipants() {
+        this.setState({participantsToggle: !this.state.participantsToggle})
     }
 
     sendChatSignal(type, text) {
@@ -217,15 +223,16 @@ class ChatRoom extends Component {
         const chatList = this.state.chatList
         const pk = this.state.pk
         const msg = this.state.msg
+        const participantsToggle = this.state.participantsToggle
 
         return (
             <>
                 {this.state.session !== undefined ? (
-                    <div className='chat-container'>
-                        <RoomHeader sessionId={mySessionId}/>
-                        <div className='chat-content'>
-                            <Participants participants={participants} pk={pk}/>
-                            <div className="chat">
+                    <div className={style.chatContainer}>
+                        <RoomHeader sessionId={mySessionId} participantsToggle={participantsToggle} toggleParticipants={this.toggleParticipants}/>
+                        <div className={style.chatContent}>
+                            <Participants participantsToggle={participantsToggle} participants={participants} pk={pk}/>
+                            <div className={style.chat}>
                                 <ChatList chatList={chatList} pk={pk}/>
                                 <ChatInput msg={msg} changeChatContent={this.changeChatContent} submitChat={this.submitChat}/>
                             </div>

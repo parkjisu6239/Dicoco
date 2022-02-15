@@ -3,6 +3,27 @@
     background-color: rgb(243, 243, 243);
     box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 5px 0px;
     color: #575757;
+    max-width: 300px;
+    height: 100%;
+    width: 100%;
+    text-overflow: clip;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: all 0.5s cubic-bezier(0.39, 0.575, 0.565, 1);
+}
+
+@media (max-width: 600px) {
+    .participants {
+        position: absolute;
+        background-color: rgb(243, 243, 243, 0.9);
+        backdrop-filter: blur(2px);
+    }
+}
+
+.toggleOff {
+    max-width: 0px;
+    width: 0px;
+    padding: 10px 0px;
 }
 
 .participants h3 {
