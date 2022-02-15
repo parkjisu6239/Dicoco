@@ -16,7 +16,7 @@ function ChatListItem({prevChat, chat, idx, pk}) {
         const processedText =  splitText.map((word, idx) => {
             if (word.startsWith('https') || word.startsWith('http') || word.startsWith('www')) {
                 setUrl(word)
-                return <a key={idx} href={word}>{word}</a>
+                return <a key={idx} href={word} target='_blank' rel="noreferrer">{word}</a>
             } else {
                 return <span key={idx}>{word.replace('시발', '🌸')}</span>
             }
@@ -44,6 +44,7 @@ function ChatListItem({prevChat, chat, idx, pk}) {
                 width='300px'
                 height='200px'
                 descriptionLength='20'
+                showLoader={true}
                 />}
         </li>
     )
