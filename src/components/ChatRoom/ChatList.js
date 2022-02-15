@@ -12,7 +12,7 @@ function ChatList({chatList, pk}) {
     return (
         <ul className={style.chatList} ref={chatListRef}>
             {chatList.map((chat, idx) =>
-                <ChatListItem prevChat={idx > 0 ? chatList[idx-1] : null} chat={chat} idx={idx} pk={pk}/>
+                <ChatListItem key={idx} prevChat={idx > 0 ? chatList[idx-1] : null} chat={chat} idx={idx} pk={pk}/>
             )}
         </ul>
     )
