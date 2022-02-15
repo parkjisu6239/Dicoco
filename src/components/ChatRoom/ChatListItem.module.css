@@ -39,3 +39,8 @@ li{
     background-color: rgb(233, 233, 233);
     border-radius: 20px 20px 20px 0px;
 }
+
+.preview {
+    font-size: small;
+    margin-top: 7px;
+}
