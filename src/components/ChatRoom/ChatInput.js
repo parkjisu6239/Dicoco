@@ -1,9 +1,9 @@
-import styles from './ChatInput.module.css'
+import style from './ChatInput.module.css'
 import {IoMdMic} from 'react-icons/io'
 
-function ChatInput({msg, changeChatContent, submitChat}) {
+function ChatInput({msg, changeChatContent, submitChat, toggleIsSTTOn, isSTTOn}) {
     return (
-        <div className={styles.formControl}>
+        <div className={style.formControl}>
             <input 
                 id="chat-input"
                 type="text"
@@ -11,7 +11,12 @@ function ChatInput({msg, changeChatContent, submitChat}) {
                 onChange={changeChatContent}
                 onKeyUp={submitChat}
                 placeholder="Type something to send"/>
-            <IoMdMic className={styles.mic} size="1.1rem"/>
+            <div>
+                <IoMdMic 
+                    className={`${style.mic} ${isSTTOn && style.on}`} 
+                    onClick={toggleIsSTTOn} 
+                    size="1.1rem"/>
+            </div>
         </div>
     )
 }
