@@ -22,3 +22,7 @@
 .formControl .mic {
     cursor: pointer;
 }
+
+.on {
+    color: rgb(139, 189, 79);
+}
