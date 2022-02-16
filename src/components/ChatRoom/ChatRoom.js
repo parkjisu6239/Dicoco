@@ -5,6 +5,7 @@ import RoomHeader from './RoomHeader';
 import Participants from './Participants';
 import ChatList from './ChatList';
 import ChatInput from './ChatInput';
+import SpeechToText from './SpeechToText'
 import style from './ChatRoom.module.css'
 
 const OPENVIDU_SERVER_URL = 'https://' + window.location.hostname + ':4443';
@@ -22,6 +23,7 @@ class ChatRoom extends Component {
             msg: '',
             participants: [],
             participantsToggle: true,
+            isSTTOn: false,
         };
 
         this.joinSession = this.joinSession.bind(this);
@@ -30,6 +32,7 @@ class ChatRoom extends Component {
         this.submitChat = this.submitChat.bind(this)
         this.sendEnterExitSignal = this.sendEnterExitSignal.bind(this)
         this.toggleParticipants = this.toggleParticipants.bind(this)
+        this.toggleIsSTTOn = this.toggleIsSTTOn.bind(this)
     }
 
     
@@ -63,6 +66,10 @@ class ChatRoom extends Component {
 
     toggleParticipants() {
         this.setState({participantsToggle: !this.state.participantsToggle})
+    }
+
+    toggleIsSTTOn() {
+        this.setState({isSTTOn: !this.state.isSTTOn})
     }
 
     sendChatSignal(type, text) {
@@ -224,6 +231,7 @@ class ChatRoom extends Component {
         const pk = this.state.pk
         const msg = this.state.msg
         const participantsToggle = this.state.participantsToggle
+        const isSTTOn = this.state.isSTTOn
 
         return (
             <>
@@ -234,7 +242,15 @@ class ChatRoom extends Component {
                             <Participants participantsToggle={participantsToggle} participants={participants} pk={pk}/>
                             <div className={style.chat}>
                                 <ChatList chatList={chatList} pk={pk}/>
-                                <ChatInput msg={msg} changeChatContent={this.changeChatContent} submitChat={this.submitChat}/>
+                                <SpeechToText
+                                    isSTTOn={isSTTOn}
+                                    changeChatContent={this.changeChatContent} />
+                                <ChatInput 
+                                    msg={msg}
+                                    changeChatContent={this.changeChatContent} 
+                                    submitChat={this.submitChat}
+                                    toggleIsSTTOn={this.toggleIsSTTOn}
+                                    isSTTOn={isSTTOn}/>
                             </div>
                         </div>
                     </div>
