@@ -53,9 +53,8 @@ class ChatRoom extends Component {
     }
 
     changeChatContent(e) {
-        this.setState({
-            msg: e.target.value,
-        });
+        const msg = e.target ? e.target.value : e
+        this.setState({msg});
     }
 
     submitChat(e) {
