@@ -6,6 +6,7 @@ import Participants from './Participants';
 import ChatList from './ChatList';
 import ChatInput from './ChatInput';
 import SpeechToText from './SpeechToText'
+import VideoList from './VideoList';
 import style from './ChatRoom.module.css'
 
 const OPENVIDU_SERVER_URL = 'https://' + window.location.hostname + ':4443';
@@ -24,6 +25,7 @@ class ChatRoom extends Component {
             participants: [],
             participantsToggle: true,
             isSTTOn: false,
+            cameraOn: false,
         };
 
         this.joinSession = this.joinSession.bind(this);
@@ -33,6 +35,7 @@ class ChatRoom extends Component {
         this.sendEnterExitSignal = this.sendEnterExitSignal.bind(this)
         this.toggleParticipants = this.toggleParticipants.bind(this)
         this.toggleIsSTTOn = this.toggleIsSTTOn.bind(this)
+        this.toggleCameraOn = this.toggleCameraOn.bind(this)
     }
 
     
@@ -65,6 +68,10 @@ class ChatRoom extends Component {
 
     toggleParticipants() {
         this.setState({participantsToggle: !this.state.participantsToggle})
+    }
+
+    toggleCameraOn() {
+        this.setState({cameraOn: !this.state.cameraOn})
     }
 
     toggleIsSTTOn() {
@@ -231,15 +238,22 @@ class ChatRoom extends Component {
         const msg = this.state.msg
         const participantsToggle = this.state.participantsToggle
         const isSTTOn = this.state.isSTTOn
+        const cameraOn = this.state.cameraOn
 
         return (
             <>
                 {this.state.session !== undefined ? (
                     <div className={style.chatContainer}>
-                        <RoomHeader sessionId={mySessionId} participantsToggle={participantsToggle} toggleParticipants={this.toggleParticipants}/>
+                        <RoomHeader 
+                            sessionId={mySessionId} 
+                            participantsToggle={participantsToggle}
+                            toggleParticipants={this.toggleParticipants}
+                            toggleCameraOn={this.toggleCameraOn}
+                            cameraOn={cameraOn}/>
                         <div className={style.chatContent}>
                             <Participants participantsToggle={participantsToggle} participants={participants} pk={pk}/>
-                            <div className={style.chat}>
+                            <VideoList cameraOn={cameraOn}/>
+                            <div className={`${style.chat} ${cameraOn && style.small}`}>
                                 <ChatList chatList={chatList} pk={pk}/>
                                 <SpeechToText
                                     isSTTOn={isSTTOn}
