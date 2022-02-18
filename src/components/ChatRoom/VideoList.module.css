@@ -1,0 +1,22 @@
+.videoList {
+    margin: 0;
+    padding: 10px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 5px 0px;
+    color: #575757;
+    background-color: #e5e5e5;
+    opacity: 0.8;
+    background-image: radial-gradient(#c1c1c1 0.5px, #e5e5e5 0.5px);
+    background-size: 10px 10px;
+    height: 100%;
+    width: 100%;
+    text-overflow: clip;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+
+.videoList.toggleOff {
+    max-width: 0px;
+    width: 0px;
+    padding: 10px 0px;
+}
