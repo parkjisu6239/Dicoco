@@ -20,6 +20,9 @@ class ChatRoom extends Component {
             myUserName: props.name,
             pk: null,
             session: undefined,
+            mainStreamManager: undefined,
+            publisher: undefined,
+            subscribers: [],
             chatList: [],
             msg: '',
             participants: [],
@@ -30,7 +33,9 @@ class ChatRoom extends Component {
 
         this.joinSession = this.joinSession.bind(this);
         this.onbeforeunload = this.onbeforeunload.bind(this);
+        this.switchCamera = this.switchCamera.bind(this);
         this.changeChatContent = this.changeChatContent.bind(this)
+        this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
         this.submitChat = this.submitChat.bind(this)
         this.sendEnterExitSignal = this.sendEnterExitSignal.bind(this)
         this.toggleParticipants = this.toggleParticipants.bind(this)
@@ -53,6 +58,25 @@ class ChatRoom extends Component {
     onbeforeunload() {
         this.sendEnterExitSignal("exit");
         this.leaveSession();
+    }
+
+    handleMainVideoStream(stream) {
+        if (this.state.mainStreamManager !== stream) {
+            this.setState({
+                mainStreamManager: stream
+            });
+        }
+    }
+
+    deleteSubscriber(streamManager) {
+        let subscribers = this.state.subscribers;
+        let index = subscribers.indexOf(streamManager, 0);
+        if (index > -1) {
+            subscribers.splice(index, 1);
+            this.setState({
+                subscribers: subscribers,
+            });
+        }
     }
 
     changeChatContent(e) {
@@ -137,6 +161,31 @@ class ChatRoom extends Component {
                 var mySession = this.state.session;
 
                 // --- 3) Specify the actions when events take place in the session ---
+                // On every new Stream received...
+                mySession.on('streamCreated', (event) => {
+                    // Subscribe to the Stream to receive it. Second parameter is undefined
+                    // so OpenVidu doesn't create an HTML video by its own
+                    var subscriber = mySession.subscribe(event.stream, undefined);
+                    var subscribers = this.state.subscribers;
+                    subscribers.push(subscriber);
+
+                    // Update the state with the new subscribers
+                    this.setState({
+                        subscribers: subscribers,
+                    });
+                });
+
+                // On every Stream destroyed...
+                mySession.on('streamDestroyed', (event) => {
+
+                    // Remove the stream from 'subscribers' array
+                    this.deleteSubscriber(event.stream.streamManager);
+                });
+
+                // On every asynchronous exception...
+                mySession.on('exception', (exception) => {
+                    console.warn(exception);
+                });
 
                 mySession.on('signal:my-chat', (event) => {
                     this.setState({
@@ -193,9 +242,38 @@ class ChatRoom extends Component {
                             token,
                             { clientData: this.state.myUserName },
                         )
-                        .then(() => {
+                        .then(async () => {
                             console.log("연결성공")
-                            this.setState({pk: new Date().getTime()})
+
+                            var devices = await this.OV.getDevices();
+                            var videoDevices = devices.filter(device => device.kind === 'videoinput');
+
+                            // --- 5) Get your own camera stream ---
+
+                            // Init a publisher passing undefined as targetElement (we don't want OpenVidu to insert a video
+                            // element: we will manage it on our own) and with the desired properties
+                            let publisher = this.OV.initPublisher(undefined, {
+                                audioSource: undefined, // The source of audio. If undefined default microphone
+                                videoSource: videoDevices[0].deviceId, // The source of video. If undefined default webcam
+                                publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+                                publishVideo: true, // Whether you want to start publishing with your video enabled or not
+                                resolution: '640x480', // The resolution of your video
+                                frameRate: 30, // The frame rate of your video
+                                insertMode: 'APPEND', // How the video is inserted in the target element 'video-container'
+                                mirror: false, // Whether to mirror your local video or not
+                            });
+
+                            // --- 6) Publish your stream ---
+
+                            mySession.publish(publisher);
+
+                            // Set the main video in the page to display our webcam and store our Publisher
+                            this.setState({
+                                currentVideoDevice: videoDevices[0],
+                                mainStreamManager: publisher,
+                                publisher: publisher,
+                                pk: new Date().getTime()
+                            });
                             this.sendEnterExitSignal("enter")
                             this.sendChatSignal('enter', '님이 입장하셨습니다.')
                         })
@@ -221,13 +299,49 @@ class ChatRoom extends Component {
         this.OV = null;
         this.setState({
             session: undefined,
-            mySessionId: null,
-            myUserName: null,
+            subscribers: [],
+            mainStreamManager: undefined,
+            publisher: undefined,
             pk: null,
             chatList: [],
         });
 
         //todo : 뒤로가기
+    }
+
+    async switchCamera() {
+        try{
+            const devices = await this.OV.getDevices()
+            var videoDevices = devices.filter(device => device.kind === 'videoinput');
+
+            if(videoDevices && videoDevices.length > 1) {
+
+                var newVideoDevice = videoDevices.filter(device => device.deviceId !== this.state.currentVideoDevice.deviceId)
+
+                if (newVideoDevice.length > 0){
+                    // Creating a new publisher with specific videoSource
+                    // In mobile devices the default and first camera is the front one
+                    var newPublisher = this.OV.initPublisher(undefined, {
+                        videoSource: newVideoDevice[0].deviceId,
+                        publishAudio: true,
+                        publishVideo: true,
+                        mirror: true
+                    });
+
+                    //newPublisher.once("accessAllowed", () => {
+                    await this.state.session.unpublish(this.state.mainStreamManager)
+
+                    await this.state.session.publish(newPublisher)
+                    this.setState({
+                        currentVideoDevice: newVideoDevice,
+                        mainStreamManager: newPublisher,
+                        publisher: newPublisher,
+                    });
+                }
+            }
+          } catch (e) {
+            console.error(e);
+          }
     }
 
     render() {
@@ -239,6 +353,8 @@ class ChatRoom extends Component {
         const participantsToggle = this.state.participantsToggle
         const isSTTOn = this.state.isSTTOn
         const cameraOn = this.state.cameraOn
+        const publisher = this.state.publisher
+        const subscribers = this.state.subscribers
 
         return (
             <>
@@ -252,7 +368,12 @@ class ChatRoom extends Component {
                             cameraOn={cameraOn}/>
                         <div className={style.chatContent}>
                             <Participants participantsToggle={participantsToggle} participants={participants} pk={pk}/>
-                            <VideoList cameraOn={cameraOn}/>
+                            <VideoList 
+                                cameraOn={cameraOn}
+                                publisher={publisher}
+                                subscribers={subscribers}
+                                switchCamera={this.switchCamera}
+                                handleMainVideoStream={this.handleMainVideoStream}/>
                             <div className={`${style.chat} ${cameraOn && style.small}`}>
                                 <ChatList chatList={chatList} pk={pk}/>
                                 <SpeechToText
