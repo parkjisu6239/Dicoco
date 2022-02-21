@@ -1,11 +1,16 @@
+.streamcomponent {
+    float: left;
+}
+
 video {
     width: 100%;
     height: auto;
-    float: left;
     cursor: pointer;
 }
+
 .streamcomponent div {
     position: absolute;
+    z-index: 2;
     background: #f8f8f8;
     padding-left: 5px;
     padding-right: 5px;
@@ -13,6 +18,7 @@ video {
     font-weight: bold;
     border-bottom-right-radius: 4px;
 }
+
 p{
     margin: 0;
 }

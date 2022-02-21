@@ -21,3 +21,7 @@
     max-height: 100px;
 }
 
+.chat.small {
+    max-width: 400px;
+}
+
